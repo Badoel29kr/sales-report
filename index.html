@@ -962,7 +962,7 @@
 
         // Initialize sales chart
         const initSalesChart = (type = 'line') => {
-            if (window.salesChart) {
+            if (window.salesChart && typeof window.salesChart.destroy === 'function') {
                 window.salesChart.destroy();
             }
 
@@ -1045,7 +1045,7 @@
 
         // Initialize performance chart
         const initPerformanceChart = () => {
-            if (window.performanceChart) {
+            if (window.performanceChart && typeof window.performanceChart.destroy === 'function') {
                 window.performanceChart.destroy();
             }
 
