@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalesTracker Pro - Aplikasi Laporan Sales Marketing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SheetJS library for Excel export -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -15,39 +17,47 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
+
         .gradient-bg {
             background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
         }
+
         .card {
             transition: all 0.3s ease;
         }
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+
         .tab-active {
             border-bottom: 3px solid #4f46e5;
             color: #4f46e5;
             font-weight: 600;
         }
+
         .subtab-active {
             background-color: #4f46e5;
             color: white;
         }
+
         .dropdown {
             position: relative;
             display: inline-block;
         }
+
         .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
             border-radius: 0.375rem;
         }
+
         .dropdown-content a {
             color: black;
             padding: 12px 16px;
@@ -55,13 +65,16 @@
             display: block;
             font-size: 0.875rem;
         }
+
         .dropdown-content a:hover {
             background-color: #f1f1f1;
             border-radius: 0.375rem;
         }
+
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
         .loading-spinner {
             display: inline-block;
             width: 1rem;
@@ -71,23 +84,30 @@
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .chart-toggle-btn {
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
             border-radius: 0.25rem;
             transition: all 0.2s;
         }
+
         .chart-toggle-btn.active {
             background-color: #4f46e5;
             color: white;
         }
+
         .chart-toggle-btn:not(.active) {
             background-color: #e5e7eb;
             color: #4b5563;
         }
+
         .welcome-modal {
             position: fixed;
             top: 0;
@@ -100,6 +120,7 @@
             justify-content: center;
             z-index: 50;
         }
+
         .welcome-content {
             background-color: white;
             border-radius: 0.5rem;
@@ -108,16 +129,19 @@
             width: 90%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+
         .welcome-title {
             font-size: 1.5rem;
             font-weight: 600;
             color: #4f46e5;
             margin-bottom: 1rem;
         }
+
         .welcome-text {
             margin-bottom: 1.5rem;
             line-height: 1.6;
         }
+
         .welcome-btn {
             background-color: #4f46e5;
             color: white;
@@ -127,18 +151,21 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
+
         .welcome-btn:hover {
             background-color: #4338ca;
         }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- Welcome Modal for First-time Users -->
     <div id="welcomeModal" class="welcome-modal hidden">
         <div class="welcome-content">
             <div class="welcome-title">Selamat Datang di SalesTracker Pro!</div>
             <div class="welcome-text">
-                <p class="mb-3">Terima kasih telah menggunakan aplikasi SalesTracker Pro untuk mengelola laporan sales marketing Anda.</p>
+                <p class="mb-3">Terima kasih telah menggunakan aplikasi SalesTracker Pro untuk mengelola laporan sales
+                    marketing Anda.</p>
                 <p class="mb-3">Dengan aplikasi ini, Anda dapat:</p>
                 <ul class="list-disc pl-5 mb-3">
                     <li>Mencatat laporan penjualan harian</li>
@@ -190,8 +217,10 @@
                         <h3 class="text-2xl font-bold text-gray-800" id="totalSales">Rp 0</h3>
                     </div>
                     <div class="p-2 rounded-md bg-blue-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
@@ -207,13 +236,16 @@
                         <h3 class="text-2xl font-bold text-gray-800" id="totalTransactions">0</h3>
                     </div>
                     <div class="p-2 rounded-md bg-purple-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                 </div>
                 <div class="mt-2">
-                    <span id="transactionChange" class="text-xs font-medium text-gray-600">Belum ada data perbandingan</span>
+                    <span id="transactionChange" class="text-xs font-medium text-gray-600">Belum ada data
+                        perbandingan</span>
                 </div>
             </div>
 
@@ -224,8 +256,10 @@
                         <h3 class="text-2xl font-bold text-gray-800" id="totalVisits">0</h3>
                     </div>
                     <div class="p-2 rounded-md bg-teal-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
                 </div>
@@ -241,8 +275,10 @@
                         <h3 class="text-2xl font-bold text-gray-800" id="targetAchieved">0%</h3>
                     </div>
                     <div class="p-2 rounded-md bg-yellow-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </div>
                 </div>
@@ -262,13 +298,17 @@
                     <div class="flex items-center space-x-2">
                         <div class="flex border rounded-md overflow-hidden">
                             <button id="lineChartBtn" class="chart-toggle-btn active">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                                 </svg>
                             </button>
                             <button id="barChartBtn" class="chart-toggle-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                             </button>
                         </div>
@@ -295,7 +335,8 @@
         <!-- Form Input Tabs -->
         <div class="bg-white p-4 rounded-lg shadow mb-6">
             <div class="flex border-b border-gray-200 mb-4">
-                <button id="tabSales" class="subtab-active px-4 py-2 text-sm rounded-t-md mr-2">Laporan Penjualan</button>
+                <button id="tabSales" class="subtab-active px-4 py-2 text-sm rounded-t-md mr-2">Laporan
+                    Penjualan</button>
                 <button id="tabVisit" class="px-4 py-2 text-sm bg-gray-100 rounded-t-md">Laporan Kunjungan</button>
             </div>
 
@@ -306,11 +347,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                            <input type="date" id="reportDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="date" id="reportDate"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sales</label>
-                            <select id="salesPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <select id="salesPerson"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                                 <option value="">Pilih Sales</option>
                                 <option value="Budi Santoso">Budi Santoso</option>
                                 <option value="Dewi Lestari">Dewi Lestari</option>
@@ -324,25 +369,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Transaksi</label>
-                            <input type="number" id="transactionCount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                            <input type="number" id="transactionCount"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="0" required min="0">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Total Penjualan (Rp)</label>
-                            <input type="number" id="salesAmount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                            <input type="number" id="salesAmount"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="0" required min="0">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Target Harian (Rp)</label>
-                            <input type="number" id="dailyTarget" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                            <input type="number" id="dailyTarget"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="0" required min="0">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-                        <textarea id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tambahkan catatan atau keterangan..."></textarea>
+                        <textarea id="notes" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Tambahkan catatan atau keterangan..."></textarea>
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan Laporan</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan
+                            Laporan</button>
                     </div>
                 </form>
             </div>
@@ -354,11 +409,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kunjungan</label>
-                            <input type="date" id="visitDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="date" id="visitDate"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sales</label>
-                            <select id="visitSalesPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <select id="visitSalesPerson"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required>
                                 <option value="">Pilih Sales</option>
                                 <option value="Budi Santoso">Budi Santoso</option>
                                 <option value="Dewi Lestari">Dewi Lestari</option>
@@ -372,32 +431,44 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Perusahaan/Klien</label>
-                            <input type="text" id="clientCompany" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama perusahaan atau klien" required>
+                            <input type="text" id="clientCompany"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Nama perusahaan atau klien" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                            <input type="text" id="clientAddress" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Alamat klien">
+                            <input type="text" id="clientAddress"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Alamat klien">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Bertemu Dengan</label>
-                            <input type="text" id="contactPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama kontak" required>
+                            <input type="text" id="contactPerson"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Nama kontak" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
-                            <input type="text" id="contactPosition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jabatan kontak">
+                            <input type="text" id="contactPosition"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Jabatan kontak">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
-                            <input type="tel" id="contactPhone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor telepon kontak">
+                            <input type="tel" id="contactPhone"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Nomor telepon kontak">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Hasil Kunjungan</label>
-                        <select id="visitResult" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" required>
+                        <select id="visitResult"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                            required>
                             <option value="">Pilih Hasil</option>
                             <option value="Presentasi">Presentasi</option>
                             <option value="Penawaran">Penawaran</option>
@@ -406,14 +477,18 @@
                             <option value="Follow Up">Follow Up</option>
                             <option value="Lainnya">Lainnya</option>
                         </select>
-                        <textarea id="visitNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Detail hasil kunjungan..."></textarea>
+                        <textarea id="visitNotes" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Detail hasil kunjungan..."></textarea>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tindak Lanjut</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <select id="followUpType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <select id="followUpType"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required>
                                     <option value="">Pilih Tindak Lanjut</option>
                                     <option value="Telepon">Telepon</option>
                                     <option value="Email">Email</option>
@@ -423,13 +498,17 @@
                                 </select>
                             </div>
                             <div>
-                                <input type="date" id="followUpDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tanggal tindak lanjut" required>
+                                <input type="date" id="followUpDate"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Tanggal tindak lanjut" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan Laporan Kunjungan</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan
+                            Laporan Kunjungan</button>
                     </div>
                 </form>
             </div>
@@ -440,13 +519,17 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800" id="reportTableTitle">Laporan Harian</h3>
                 <div class="flex space-x-2">
-                    <input type="text" id="searchReport" placeholder="Cari..." class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="searchReport" placeholder="Cari..."
+                        class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div class="dropdown">
-                        <button id="exportBtn" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm flex items-center">
+                        <button id="exportBtn"
+                            class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm flex items-center">
                             <span id="exportBtnText">Export</span>
                             <span id="exportSpinner" class="ml-2 loading-spinner hidden"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                         <div class="dropdown-content">
@@ -473,20 +556,25 @@
             <div class="mt-4 flex justify-between items-center">
                 <p class="text-sm text-gray-500" id="reportCount">Menampilkan 0 data</p>
                 <div class="flex space-x-2">
-                    <button id="prevPage" class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Sebelumnya</button>
-                    <button id="nextPage" class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Selanjutnya</button>
+                    <button id="prevPage"
+                        class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Sebelumnya</button>
+                    <button id="nextPage"
+                        class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Selanjutnya</button>
                 </div>
             </div>
         </div>
 
         <!-- Modal Detail Kunjungan -->
-        <div id="visitDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div id="visitDetailModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
                 <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-800">Detail Kunjungan</h3>
                     <button id="closeVisitDetail" class="text-gray-500 hover:text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -494,13 +582,15 @@
                     <!-- Visit detail content will be inserted here -->
                 </div>
                 <div class="p-4 border-t border-gray-200 flex justify-end">
-                    <button id="closeVisitDetailBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Tutup</button>
+                    <button id="closeVisitDetailBtn"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Tutup</button>
                 </div>
             </div>
         </div>
 
         <!-- Confirmation Modal -->
-        <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div id="confirmationModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
                 <div class="p-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-800" id="confirmationTitle">Konfirmasi</h3>
@@ -509,8 +599,10 @@
                     Apakah Anda yakin ingin menghapus data ini?
                 </div>
                 <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
-                    <button id="cancelConfirmation" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Batal</button>
-                    <button id="confirmAction" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Hapus</button>
+                    <button id="cancelConfirmation"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Batal</button>
+                    <button id="confirmAction"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Hapus</button>
                 </div>
             </div>
         </div>
@@ -544,7 +636,7 @@
         };
 
         // Close welcome modal
-        document.getElementById('welcomeCloseBtn').addEventListener('click', function() {
+        document.getElementById('welcomeCloseBtn').addEventListener('click', function () {
             document.getElementById('welcomeModal').classList.add('hidden');
         });
 
@@ -553,15 +645,15 @@
             const savedSalesData = localStorage.getItem('salesData');
             const savedVisitData = localStorage.getItem('visitData');
             const savedPerformanceData = localStorage.getItem('salesPerformanceData');
-            
+
             if (savedSalesData) {
                 salesData = JSON.parse(savedSalesData);
             }
-            
+
             if (savedVisitData) {
                 visitData = JSON.parse(savedVisitData);
             }
-            
+
             if (savedPerformanceData) {
                 salesPerformanceData = JSON.parse(savedPerformanceData);
             } else {
@@ -589,11 +681,11 @@
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
-            
+
             // Set default date for report forms
             document.getElementById('reportDate').valueAsDate = now;
             document.getElementById('visitDate').valueAsDate = now;
-            
+
             // Set default follow-up date (7 days from now)
             const followUpDate = new Date();
             followUpDate.setDate(followUpDate.getDate() + 7);
@@ -662,12 +754,12 @@
             // Reset weekly and monthly data
             salesData.weekly = [];
             salesData.monthly = [];
-            
+
             if (salesData.daily.length === 0) return;
-            
+
             // Sort daily data by date
             const sortedDailyData = [...salesData.daily].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
+
             // Group by week
             const weeklyGroups = {};
             sortedDailyData.forEach(item => {
@@ -675,7 +767,7 @@
                 const year = date.getFullYear();
                 const weekNumber = getWeekNumber(date);
                 const weekKey = `${year}-W${weekNumber}`;
-                
+
                 if (!weeklyGroups[weekKey]) {
                     weeklyGroups[weekKey] = {
                         week: `Minggu ${weekNumber}, ${year}`,
@@ -684,17 +776,17 @@
                         days: 0
                     };
                 }
-                
+
                 weeklyGroups[weekKey].sales += item.sales;
                 weeklyGroups[weekKey].transactions += item.transactions;
                 weeklyGroups[weekKey].days++;
             });
-            
+
             // Calculate weekly averages and create weekly data
             Object.values(weeklyGroups).forEach(week => {
                 const avgDaily = week.sales / week.days;
                 const targetAchieved = calculateWeeklyTargetAchievement(week.week);
-                
+
                 salesData.weekly.push({
                     week: week.week,
                     sales: week.sales,
@@ -703,7 +795,7 @@
                     targetAchieved: targetAchieved
                 });
             });
-            
+
             // Group by month
             const monthlyGroups = {};
             sortedDailyData.forEach(item => {
@@ -712,7 +804,7 @@
                 const month = date.getMonth();
                 const monthKey = `${year}-${month}`;
                 const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                
+
                 if (!monthlyGroups[monthKey]) {
                     monthlyGroups[monthKey] = {
                         month: `${monthNames[month]} ${year}`,
@@ -721,18 +813,18 @@
                         days: 0
                     };
                 }
-                
+
                 monthlyGroups[monthKey].sales += item.sales;
                 monthlyGroups[monthKey].transactions += item.transactions;
                 monthlyGroups[monthKey].days++;
             });
-            
+
             // Calculate monthly averages and create monthly data
             Object.values(monthlyGroups).forEach(month => {
                 const weeksInMonth = Math.ceil(month.days / 7);
                 const avgWeekly = month.sales / weeksInMonth;
                 const targetAchieved = calculateMonthlyTargetAchievement(month.month);
-                
+
                 salesData.monthly.push({
                     month: month.month,
                     sales: month.sales,
@@ -741,45 +833,45 @@
                     targetAchieved: targetAchieved
                 });
             });
-            
+
             // Sort weekly and monthly data
             salesData.weekly.sort((a, b) => {
                 const aMatch = a.week.match(/Minggu (\d+), (\d+)/);
                 const bMatch = b.week.match(/Minggu (\d+), (\d+)/);
-                
+
                 if (aMatch && bMatch) {
                     const aYear = parseInt(aMatch[2]);
                     const bYear = parseInt(bMatch[2]);
-                    
+
                     if (aYear !== bYear) return aYear - bYear;
-                    
+
                     const aWeek = parseInt(aMatch[1]);
                     const bWeek = parseInt(bMatch[1]);
                     return aWeek - bWeek;
                 }
-                
+
                 return 0;
             });
-            
+
             salesData.monthly.sort((a, b) => {
                 const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 const aMatch = a.month.match(/(\w+) (\d+)/);
                 const bMatch = b.month.match(/(\w+) (\d+)/);
-                
+
                 if (aMatch && bMatch) {
                     const aYear = parseInt(aMatch[2]);
                     const bYear = parseInt(bMatch[2]);
-                    
+
                     if (aYear !== bYear) return aYear - bYear;
-                    
+
                     const aMonth = monthNames.indexOf(aMatch[1]);
                     const bMonth = monthNames.indexOf(bMatch[1]);
                     return aMonth - bMonth;
                 }
-                
+
                 return 0;
             });
-            
+
             // Save updated data
             saveData();
         };
@@ -797,21 +889,21 @@
         const calculateWeeklyTargetAchievement = (weekStr) => {
             const match = weekStr.match(/Minggu (\d+), (\d+)/);
             if (!match) return 0;
-            
+
             const weekNumber = parseInt(match[1]);
             const year = parseInt(match[2]);
-            
+
             // Filter daily data for this week
             const weekData = salesData.daily.filter(item => {
                 const date = new Date(item.date);
                 return date.getFullYear() === year && getWeekNumber(date) === weekNumber;
             });
-            
+
             if (weekData.length === 0) return 0;
-            
+
             const totalSales = weekData.reduce((sum, item) => sum + item.sales, 0);
             const totalTarget = weekData.reduce((sum, item) => sum + (item.target || 0), 0);
-            
+
             return totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
         };
 
@@ -820,24 +912,24 @@
             const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             const match = monthStr.match(/(\w+) (\d+)/);
             if (!match) return 0;
-            
+
             const monthName = match[1];
             const year = parseInt(match[2]);
             const monthIndex = monthNames.indexOf(monthName);
-            
+
             if (monthIndex === -1) return 0;
-            
+
             // Filter daily data for this month
             const monthData = salesData.daily.filter(item => {
                 const date = new Date(item.date);
                 return date.getFullYear() === year && date.getMonth() === monthIndex;
             });
-            
+
             if (monthData.length === 0) return 0;
-            
+
             const totalSales = monthData.reduce((sum, item) => sum + item.sales, 0);
             const totalTarget = monthData.reduce((sum, item) => sum + (item.target || 0), 0);
-            
+
             return totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
         };
 
@@ -849,7 +941,7 @@
                 item.target = 0;
                 item.percentage = 0;
             });
-            
+
             // Calculate sales and targets for each sales person
             salesData.daily.forEach(item => {
                 const salesPerson = salesPerformanceData.find(sp => sp.name === item.salesPerson);
@@ -858,12 +950,12 @@
                     salesPerson.target += (item.target || 0);
                 }
             });
-            
+
             // Calculate percentages
             salesPerformanceData.forEach(item => {
                 item.percentage = item.target > 0 ? Math.round((item.sales / item.target) * 100) : 0;
             });
-            
+
             // Save updated data
             saveData();
         };
@@ -873,13 +965,13 @@
             if (window.salesChart) {
                 window.salesChart.destroy();
             }
-            
+
             const ctx = document.getElementById('salesChart').getContext('2d');
-            
+
             // Get data based on current view
             let labels = [];
             let salesValues = [];
-            
+
             if (currentView === 'daily' && salesData.daily.length > 0) {
                 // Sort by date
                 const sortedData = [...salesData.daily].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -899,14 +991,14 @@
                 labels = ['Belum ada data'];
                 salesValues = [0];
             }
-            
+
             // Set current chart type
             currentChartType = type;
-            
+
             // Update toggle buttons
             document.getElementById('lineChartBtn').classList.toggle('active', type === 'line');
             document.getElementById('barChartBtn').classList.toggle('active', type === 'bar');
-            
+
             window.salesChart = new Chart(ctx, {
                 type: type,
                 data: {
@@ -929,7 +1021,7 @@
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
+                                callback: function (value) {
                                     return value + ' Jt';
                                 }
                             }
@@ -941,7 +1033,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return `Penjualan: ${context.parsed.y} Juta Rupiah`;
                                 }
                             }
@@ -956,12 +1048,12 @@
             if (window.performanceChart) {
                 window.performanceChart.destroy();
             }
-            
+
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            
+
             // Filter out sales persons with no data
             const filteredData = salesPerformanceData.filter(item => item.target > 0);
-            
+
             if (filteredData.length === 0) {
                 // No performance data yet
                 window.performanceChart = new Chart(ctx, {
@@ -993,19 +1085,19 @@
                 });
                 return;
             }
-            
+
             // Sort data by percentage for better visualization
             const sortedData = [...filteredData].sort((a, b) => a.percentage - b.percentage);
-            
+
             const labels = sortedData.map(item => item.name);
             const salesValues = sortedData.map(item => item.sales / 1000000);
             const targetValues = sortedData.map(item => item.target / 1000000);
-            
+
             // Create color array based on performance
-            const barColors = sortedData.map(item => 
+            const barColors = sortedData.map(item =>
                 item.percentage >= 100 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(234, 179, 8, 0.7)'
             );
-            
+
             window.performanceChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1015,7 +1107,7 @@
                             label: 'Penjualan (Juta Rp)',
                             data: salesValues,
                             backgroundColor: barColors,
-                            borderColor: sortedData.map(item => 
+                            borderColor: sortedData.map(item =>
                                 item.percentage >= 100 ? 'rgba(34, 197, 94, 1)' : 'rgba(234, 179, 8, 1)'
                             ),
                             borderWidth: 1
@@ -1040,7 +1132,7 @@
                         x: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
+                                callback: function (value) {
                                     return value + ' Jt';
                                 }
                             }
@@ -1053,12 +1145,12 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const datasetLabel = context.dataset.label || '';
                                     const value = context.parsed.x;
                                     const index = context.dataIndex;
                                     const percentage = sortedData[index].percentage;
-                                    
+
                                     if (context.datasetIndex === 0) {
                                         return [
                                             `${datasetLabel}: ${value} Juta Rupiah`,
@@ -1082,16 +1174,16 @@
             const tableTitle = document.getElementById('reportTableTitle');
             const emptyMessage = document.getElementById('emptyTableMessage');
             const table = document.getElementById('reportTable');
-            
+
             tableHeader.innerHTML = '';
             tableBody.innerHTML = '';
-            
+
             let headers = [];
             let data = [];
-            
+
             // Update current view
             currentView = type;
-            
+
             if (type === 'daily') {
                 tableTitle.textContent = 'Laporan Harian';
                 headers = ['Tanggal', 'Sales', 'Jumlah Transaksi', 'Total Penjualan', 'Target', 'Pencapaian', 'Catatan', 'Aksi'];
@@ -1109,7 +1201,7 @@
                 headers = ['Tanggal', 'Sales', 'Perusahaan', 'Kontak', 'Jabatan', 'Hasil', 'Tindak Lanjut', 'Aksi'];
                 data = visitData;
             }
-            
+
             // Check if there's data to display
             if (data.length === 0) {
                 emptyMessage.classList.remove('hidden');
@@ -1120,7 +1212,7 @@
                 emptyMessage.classList.add('hidden');
                 table.classList.remove('hidden');
             }
-            
+
             // Create table headers
             headers.forEach(header => {
                 const th = document.createElement('th');
@@ -1128,22 +1220,22 @@
                 th.textContent = header;
                 tableHeader.appendChild(th);
             });
-            
+
             // Pagination
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const paginatedData = data.slice(startIndex, endIndex);
-            
+
             // Create table rows
             paginatedData.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50';
-                
+
                 if (type === 'daily') {
                     const date = new Date(item.date);
                     const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
                     const targetAchieved = item.target > 0 ? Math.round((item.sales / item.target) * 100) : 0;
-                    
+
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>
@@ -1215,30 +1307,30 @@
                         </td>
                     `;
                 }
-                
+
                 tableBody.appendChild(tr);
             });
-            
+
             document.getElementById('reportCount').textContent = `Menampilkan ${paginatedData.length} dari ${data.length} data`;
-            
+
             // Update pagination buttons
             document.getElementById('prevPage').disabled = currentPage === 1;
             document.getElementById('nextPage').disabled = endIndex >= data.length;
-            
+
             // Add event listeners to buttons
             if (type === 'daily') {
                 const editButtons = document.querySelectorAll('.edit-daily');
                 const deleteButtons = document.querySelectorAll('.delete-daily');
-                
+
                 editButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const index = parseInt(this.getAttribute('data-index'));
                         editDailyReport(index);
                     });
                 });
-                
+
                 deleteButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const index = parseInt(this.getAttribute('data-index'));
                         showDeleteConfirmation('daily', index);
                     });
@@ -1246,34 +1338,34 @@
             } else if (type === 'visit') {
                 const detailButtons = document.querySelectorAll('.view-visit-detail');
                 const deleteButtons = document.querySelectorAll('.delete-visit');
-                
+
                 detailButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const visitId = parseInt(this.getAttribute('data-id'));
                         showVisitDetail(visitId);
                     });
                 });
-                
+
                 deleteButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const visitId = parseInt(this.getAttribute('data-id'));
                         showDeleteConfirmation('visit', visitId);
                     });
                 });
             } else if (type === 'weekly') {
                 const detailButtons = document.querySelectorAll('.view-weekly-detail');
-                
+
                 detailButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const week = this.getAttribute('data-week');
                         showWeeklyDetail(week);
                     });
                 });
             } else if (type === 'monthly') {
                 const detailButtons = document.querySelectorAll('.view-monthly-detail');
-                
+
                 detailButtons.forEach(button => {
-                    button.addEventListener('click', function() {
+                    button.addEventListener('click', function () {
                         const month = this.getAttribute('data-month');
                         showMonthlyDetail(month);
                     });
@@ -1285,17 +1377,17 @@
         const editDailyReport = (index) => {
             const report = salesData.daily[index];
             if (!report) return;
-            
+
             document.getElementById('reportDate').value = report.date;
             document.getElementById('salesPerson').value = report.salesPerson;
             document.getElementById('transactionCount').value = report.transactions;
             document.getElementById('salesAmount').value = report.sales;
             document.getElementById('dailyTarget').value = report.target;
             document.getElementById('notes').value = report.notes || '';
-            
+
             // Remove the report from the array
             salesData.daily.splice(index, 1);
-            
+
             // Update UI
             updateDashboardSummary(currentView);
             updateSalesPerformance();
@@ -1303,7 +1395,7 @@
             initSalesChart(currentChartType);
             initPerformanceChart();
             updateReportTable(currentView);
-            
+
             // Scroll to form
             document.getElementById('dailyReportForm').scrollIntoView({ behavior: 'smooth' });
         };
@@ -1312,10 +1404,10 @@
         const showDeleteConfirmation = (type, id) => {
             deleteItemType = type;
             deleteItemId = id;
-            
+
             const confirmationTitle = document.getElementById('confirmationTitle');
             const confirmationContent = document.getElementById('confirmationContent');
-            
+
             if (type === 'daily') {
                 confirmationTitle.textContent = 'Hapus Laporan Harian';
                 confirmationContent.textContent = 'Apakah Anda yakin ingin menghapus laporan harian ini? Tindakan ini tidak dapat dibatalkan.';
@@ -1323,7 +1415,7 @@
                 confirmationTitle.textContent = 'Hapus Laporan Kunjungan';
                 confirmationContent.textContent = 'Apakah Anda yakin ingin menghapus laporan kunjungan ini? Tindakan ini tidak dapat dibatalkan.';
             }
-            
+
             document.getElementById('confirmationModal').classList.remove('hidden');
         };
 
@@ -1339,16 +1431,16 @@
                     visitData.splice(index, 1);
                 }
             }
-            
+
             // Save data
             saveData();
-            
+
             // Update UI
             updateDashboardSummary(currentView);
             initSalesChart(currentChartType);
             initPerformanceChart();
             updateReportTable(currentView);
-            
+
             // Close modal
             document.getElementById('confirmationModal').classList.add('hidden');
         };
@@ -1357,7 +1449,7 @@
         const showVisitDetail = (visitId) => {
             const visit = visitData.find(v => v.id === visitId);
             if (!visit) return;
-            
+
             const detailContent = document.getElementById('visitDetailContent');
             detailContent.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -1417,7 +1509,7 @@
                     </div>
                 </div>
             `;
-            
+
             document.getElementById('visitDetailModal').classList.remove('hidden');
         };
 
@@ -1425,18 +1517,18 @@
         const showWeeklyDetail = (weekStr) => {
             const match = weekStr.match(/Minggu (\d+), (\d+)/);
             if (!match) return;
-            
+
             const weekNumber = parseInt(match[1]);
             const year = parseInt(match[2]);
-            
+
             // Filter daily data for this week
             const weekData = salesData.daily.filter(item => {
                 const date = new Date(item.date);
                 return date.getFullYear() === year && getWeekNumber(date) === weekNumber;
             });
-            
+
             if (weekData.length === 0) return;
-            
+
             // Create a simple report
             let detailContent = `<h4 class="text-lg font-medium mb-4">Detail Minggu ${weekNumber}, ${year}</h4>`;
             detailContent += `<p class="mb-4">Total penjualan: ${formatCurrency(weekData.reduce((sum, item) => sum + item.sales, 0))}</p>`;
@@ -1445,15 +1537,15 @@
             detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>';
             detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penjualan</th>';
             detailContent += '</tr></thead><tbody class="bg-white divide-y divide-gray-200">';
-            
+
             weekData.forEach(item => {
                 detailContent += `<tr><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(item.date)}</td>`;
                 detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>`;
                 detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td></tr>`;
             });
-            
+
             detailContent += '</tbody></table>';
-            
+
             document.getElementById('visitDetailContent').innerHTML = detailContent;
             document.getElementById('visitDetailModal').classList.remove('hidden');
         };
@@ -1463,21 +1555,21 @@
             const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             const match = monthStr.match(/(\w+) (\d+)/);
             if (!match) return;
-            
+
             const monthName = match[1];
             const year = parseInt(match[2]);
             const monthIndex = monthNames.indexOf(monthName);
-            
+
             if (monthIndex === -1) return;
-            
+
             // Filter daily data for this month
             const monthData = salesData.daily.filter(item => {
                 const date = new Date(item.date);
                 return date.getFullYear() === year && date.getMonth() === monthIndex;
             });
-            
+
             if (monthData.length === 0) return;
-            
+
             // Create a simple report
             let detailContent = `<h4 class="text-lg font-medium mb-4">Detail Bulan ${monthName} ${year}</h4>`;
             detailContent += `<p class="mb-4">Total penjualan: ${formatCurrency(monthData.reduce((sum, item) => sum + item.sales, 0))}</p>`;
@@ -1486,15 +1578,15 @@
             detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>';
             detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penjualan</th>';
             detailContent += '</tr></thead><tbody class="bg-white divide-y divide-gray-200">';
-            
+
             monthData.forEach(item => {
                 detailContent += `<tr><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(item.date)}</td>`;
                 detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>`;
                 detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td></tr>`;
             });
-            
+
             detailContent += '</tbody></table>';
-            
+
             document.getElementById('visitDetailContent').innerHTML = detailContent;
             document.getElementById('visitDetailModal').classList.remove('hidden');
         };
@@ -1503,14 +1595,14 @@
         const exportToExcel = () => {
             const exportSpinner = document.getElementById('exportSpinner');
             const exportBtnText = document.getElementById('exportBtnText');
-            
+
             exportSpinner.classList.remove('hidden');
             exportBtnText.textContent = 'Mengekspor...';
-            
+
             setTimeout(() => {
                 let dataToExport = [];
                 let fileName = '';
-                
+
                 if (currentView === 'daily') {
                     dataToExport = salesData.daily.map(item => ({
                         'Tanggal': formatDate(item.date),
@@ -1556,14 +1648,14 @@
                     }));
                     fileName = 'Laporan_Kunjungan.xlsx';
                 }
-                
+
                 const worksheet = XLSX.utils.json_to_sheet(dataToExport);
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-                
+
                 // Generate Excel file and trigger download
                 XLSX.writeFile(workbook, fileName);
-                
+
                 exportSpinner.classList.add('hidden');
                 exportBtnText.textContent = 'Export';
             }, 500);
@@ -1572,14 +1664,14 @@
         // Handle form submissions
         const handleSalesFormSubmit = (e) => {
             e.preventDefault();
-            
+
             const date = document.getElementById('reportDate').value;
             const salesPerson = document.getElementById('salesPerson').value;
             const transactions = parseInt(document.getElementById('transactionCount').value);
             const sales = parseInt(document.getElementById('salesAmount').value);
             const target = parseInt(document.getElementById('dailyTarget').value);
             const notes = document.getElementById('notes').value;
-            
+
             // Create new report object
             const newReport = {
                 date,
@@ -1589,36 +1681,36 @@
                 target,
                 notes
             };
-            
+
             // Add to daily reports
             salesData.daily.push(newReport);
-            
+
             // Update performance data
             updateSalesPerformance();
-            
+
             // Calculate weekly and monthly summaries
             calculateSummaries();
-            
+
             // Save data
             saveData();
-            
+
             // Update UI
             updateDashboardSummary(currentView);
             initSalesChart(currentChartType);
             initPerformanceChart();
             updateReportTable(currentView);
-            
+
             // Reset form
             e.target.reset();
             document.getElementById('reportDate').valueAsDate = new Date();
-            
+
             // Show success message
             alert('Laporan penjualan berhasil disimpan!');
         };
 
         const handleVisitFormSubmit = (e) => {
             e.preventDefault();
-            
+
             const date = document.getElementById('visitDate').value;
             const salesPerson = document.getElementById('visitSalesPerson').value;
             const clientCompany = document.getElementById('clientCompany').value;
@@ -1630,7 +1722,7 @@
             const visitNotes = document.getElementById('visitNotes').value;
             const followUpType = document.getElementById('followUpType').value;
             const followUpDate = document.getElementById('followUpDate').value;
-            
+
             // Create new visit report object
             const newVisit = {
                 id: Date.now(), // Simple unique ID
@@ -1646,26 +1738,26 @@
                 followUpType,
                 followUpDate
             };
-            
+
             // Add to visit reports
             visitData.push(newVisit);
-            
+
             // Save data
             saveData();
-            
+
             // Update UI
             updateDashboardSummary(currentView);
             updateReportTable(currentView);
-            
+
             // Reset form
             e.target.reset();
             document.getElementById('visitDate').valueAsDate = new Date();
-            
+
             // Set default follow-up date (7 days from now)
             const followUpDateDefault = new Date();
             followUpDateDefault.setDate(followUpDateDefault.getDate() + 7);
             document.getElementById('followUpDate').valueAsDate = followUpDateDefault;
-            
+
             // Show success message
             alert('Laporan kunjungan berhasil disimpan!');
         };
@@ -1673,7 +1765,7 @@
         // Initialize event listeners
         const initEventListeners = () => {
             // View toggle buttons
-            document.getElementById('btnHarian').addEventListener('click', function() {
+            document.getElementById('btnHarian').addEventListener('click', function () {
                 document.getElementById('btnHarian').classList.add('tab-active');
                 document.getElementById('btnMingguan').classList.remove('tab-active');
                 document.getElementById('btnBulanan').classList.remove('tab-active');
@@ -1682,8 +1774,8 @@
                 initSalesChart(currentChartType);
                 updateReportTable(currentView);
             });
-            
-            document.getElementById('btnMingguan').addEventListener('click', function() {
+
+            document.getElementById('btnMingguan').addEventListener('click', function () {
                 document.getElementById('btnHarian').classList.remove('tab-active');
                 document.getElementById('btnMingguan').classList.add('tab-active');
                 document.getElementById('btnBulanan').classList.remove('tab-active');
@@ -1692,8 +1784,8 @@
                 initSalesChart(currentChartType);
                 updateReportTable(currentView);
             });
-            
-            document.getElementById('btnBulanan').addEventListener('click', function() {
+
+            document.getElementById('btnBulanan').addEventListener('click', function () {
                 document.getElementById('btnHarian').classList.remove('tab-active');
                 document.getElementById('btnMingguan').classList.remove('tab-active');
                 document.getElementById('btnBulanan').classList.add('tab-active');
@@ -1702,90 +1794,90 @@
                 initSalesChart(currentChartType);
                 updateReportTable(currentView);
             });
-            
+
             // Form tab toggle
-            document.getElementById('tabSales').addEventListener('click', function() {
+            document.getElementById('tabSales').addEventListener('click', function () {
                 document.getElementById('tabSales').classList.add('subtab-active');
                 document.getElementById('tabVisit').classList.remove('subtab-active');
                 document.getElementById('dailyReportForm').classList.remove('hidden');
                 document.getElementById('visitReportForm').classList.add('hidden');
             });
-            
-            document.getElementById('tabVisit').addEventListener('click', function() {
+
+            document.getElementById('tabVisit').addEventListener('click', function () {
                 document.getElementById('tabSales').classList.remove('subtab-active');
                 document.getElementById('tabVisit').classList.add('subtab-active');
                 document.getElementById('dailyReportForm').classList.add('hidden');
                 document.getElementById('visitReportForm').classList.remove('hidden');
             });
-            
+
             // Chart type toggle
-            document.getElementById('lineChartBtn').addEventListener('click', function() {
+            document.getElementById('lineChartBtn').addEventListener('click', function () {
                 initSalesChart('line');
             });
-            
-            document.getElementById('barChartBtn').addEventListener('click', function() {
+
+            document.getElementById('barChartBtn').addEventListener('click', function () {
                 initSalesChart('bar');
             });
-            
+
             // Form submissions
             document.getElementById('salesForm').addEventListener('submit', handleSalesFormSubmit);
             document.getElementById('visitForm').addEventListener('submit', handleVisitFormSubmit);
-            
+
             // Pagination
-            document.getElementById('prevPage').addEventListener('click', function() {
+            document.getElementById('prevPage').addEventListener('click', function () {
                 if (currentPage > 1) {
                     currentPage--;
                     updateReportTable(currentView);
                 }
             });
-            
-            document.getElementById('nextPage').addEventListener('click', function() {
-                const data = currentView === 'daily' ? salesData.daily : 
-                            currentView === 'weekly' ? salesData.weekly : 
-                            currentView === 'monthly' ? salesData.monthly : 
+
+            document.getElementById('nextPage').addEventListener('click', function () {
+                const data = currentView === 'daily' ? salesData.daily :
+                    currentView === 'weekly' ? salesData.weekly :
+                        currentView === 'monthly' ? salesData.monthly :
                             visitData;
-                
+
                 if (currentPage * itemsPerPage < data.length) {
                     currentPage++;
                     updateReportTable(currentView);
                 }
             });
-            
+
             // Search functionality
-            document.getElementById('searchReport').addEventListener('input', function() {
+            document.getElementById('searchReport').addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
                 // Implement search logic if needed
             });
-            
+
             // Export buttons
-            document.getElementById('exportXLSX').addEventListener('click', function(e) {
+            document.getElementById('exportXLSX').addEventListener('click', function (e) {
                 e.preventDefault();
                 exportToExcel();
             });
-            
-            document.getElementById('exportPDF').addEventListener('click', function(e) {
+
+            document.getElementById('exportPDF').addEventListener('click', function (e) {
                 e.preventDefault();
                 alert('Fitur export ke PDF belum tersedia');
             });
-            
-            document.getElementById('exportCSV').addEventListener('click', function(e) {
+
+            document.getElementById('exportCSV').addEventListener('click', function (e) {
                 e.preventDefault();
                 alert('Fitur export ke CSV belum tersedia');
             });
-            
+
             // Modal close buttons
-            document.getElementById('closeVisitDetail').addEventListener('click', function() {
+            document.getElementById('closeVisitDetail').addEventListener('click', function () {
                 document.getElementById('visitDetailModal').classList.add('hidden');
             });
-            
-            document.getElementById('closeVisitDetailBtn').addEventListener('click', function() {
+
+            document.getElementById('closeVisitDetailBtn').addEventListener('click', function () {
                 document.getElementById('visitDetailModal').classList.add('hidden');
             });
-            
-            document.getElementById('cancelConfirmation').addEventListener('click', function() {
+
+            document.getElementById('cancelConfirmation').addEventListener('click', function () {
                 document.getElementById('confirmationModal').classList.add('hidden');
             });
-            
+
             document.getElementById('confirmAction').addEventListener('click', deleteItem);
         };
 
@@ -1805,120 +1897,163 @@
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 
-<!-- Role-based access control script injected by update -->
-<script>
-(function () {
-    const session = JSON.parse(localStorage.getItem('session'));
-    if (!session || !session.loggedIn || session.expires < Date.now()) {
-        window.location.href = 'login.html';
-        return;
-    }
-    const currentUserRole = session.role;
-    const currentUserName = session.name;
-    const isAdmin = currentUserRole === 'admin';
-
-    // Update header name
-    document.addEventListener('DOMContentLoaded', () => {
-        const userBtn = document.getElementById('userMenuBtn');
-        if (userBtn) {
-            const spans = userBtn.getElementsByTagName('span');
-            if (spans.length) {
-                spans[spans.length - 1].textContent = `${currentUserName} (${currentUserRole})`;
+    <!-- Role-based access control + Logout -->
+    <script>
+        (function () {
+            /* --------- Session & Role Handling --------- */
+            const session = JSON.parse(localStorage.getItem('session'));
+            if (!session || !session.loggedIn || (session.expires && session.expires < Date.now())) {
+                window.location.href = 'login.html';
+                return;
             }
-        }
-    });
+            const currentUserRole = session.role;
+            const currentUserName = session.name;
+            const isAdmin = currentUserRole === 'admin';
 
-    // Utility to filter arrays by current sales user
-    const filterByUser = arr => isAdmin ? arr : arr.filter(i => i.salesPerson === currentUserName);
+            /* --------- Helper Functions --------- */
+            const filterByUser = arr => isAdmin ? arr : arr.filter(i => (i.salesPerson || i.user || i.createdBy) === currentUserName);
 
-    /* ---------- Override data related functions ---------- */
-    const origUpdateDashboardSummary = window.updateDashboardSummary;
-    window.updateDashboardSummary = function(type = 'daily') {
-        if (isAdmin) { 
-            origUpdateDashboardSummary(type);
-            return;
-        }
-        let totalSales = 0;
-        let totalTransactions = 0;
-        let data = [];
-        if (type === 'daily') data = filterByUser(salesData.daily);
-        else if (type === 'visit') data = filterByUser(visitData);
-        else data = filterByUser(salesData.daily);
-        data.forEach(item => {
-            totalSales += item.sales || 0;
-            totalTransactions += (item.transactions || 0);
-        });
-        document.getElementById('totalSales').textContent = formatCurrency(totalSales);
-        document.getElementById('totalTransactions').textContent = totalTransactions;
-        document.getElementById('targetAchieved').textContent = '—';
-        document.getElementById('targetProgressBar').style.width = '0%';
-        document.getElementById('totalVisits').textContent = filterByUser(visitData).length;
-    };
+            /* --------- UI Adjustments once DOM Ready --------- */
+            document.addEventListener('DOMContentLoaded', () => {
+                const userBtn = document.getElementById('userMenuBtn');
+                if (userBtn) {
+                    const spans = userBtn.getElementsByTagName('span');
+                    if (spans.length) {
+                        spans[spans.length - 1].textContent = `${currentUserName} (${currentUserRole})`;
+                    }
+                    /* ----- Create / toggle dropdown menu ----- */
+                    const menuId = 'userDropdownMenu';
+                    if (!document.getElementById(menuId)) {
+                        const dropdown = document.createElement('div');
+                        dropdown.id = menuId;
+                        dropdown.className = 'absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded shadow-lg border hidden';
+                        dropdown.innerHTML = `
+                    <a href="#" id="logoutBtn" class="block px-4 py-2 hover:bg-gray-100">Keluar</a>
+                `;
+                        userBtn.parentElement.style.position = 'relative';
+                        userBtn.parentElement.appendChild(dropdown);
+                    }
+                    userBtn.addEventListener('click', () => {
+                        const menu = document.getElementById('userDropdownMenu');
+                        if (menu) menu.classList.toggle('hidden');
+                    });
+                }
+                /* ---- Close dropdown when clicking outside ---- */
+                document.addEventListener('click', (e) => {
+                    const menu = document.getElementById('userDropdownMenu');
+                    const userBtnLocal = document.getElementById('userMenuBtn');
+                    if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && !userBtnLocal.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+                /* ---- Logout logic ---- */
+                document.body.addEventListener('click', (e) => {
+                    if (e.target && e.target.id === 'logoutBtn') {
+                        e.preventDefault();
+                        localStorage.removeItem('session');
+                        window.location.href = 'login.html';
+                    }
+                });
 
-    const origUpdateReportTable = window.updateReportTable;
-    window.updateReportTable = function(type = 'daily') {
-        origUpdateReportTable(type);
-
-        if (!isAdmin) {
-            // Remove action column header if present
-            const headerRow = document.getElementById('tableHeader');
-            [...headerRow.children].forEach(th => {
-                if (th.textContent.trim() === 'Aksi') th.remove();
-            });
-            // Remove last cell (action buttons) from each body row
-            document.querySelectorAll('#reportTableBody tr').forEach(tr => {
-                if (tr.lastElementChild) tr.removeChild(tr.lastElementChild);
-            });
-        }
-    };
-
-    const origExportToExcel = window.exportToExcel;
-    window.exportToExcel = function() {
-        if (isAdmin) { 
-            origExportToExcel();
-            return;
-        }
-        const exportSpinner = document.getElementById('exportSpinner');
-        const exportBtnText = document.getElementById('exportBtnText');
-        exportSpinner.classList.remove('hidden');
-        exportBtnText.textContent = 'Mengekspor...';
-        setTimeout(() => {
-            const dataToExport = filterByUser(salesData.daily).map(item => ({
-                'Tanggal': formatDate(item.date),
-                'Jumlah Transaksi': item.transactions,
-                'Total Penjualan': item.sales,
-                'Catatan': item.notes || ''
-            }));
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-            XLSX.writeFile(workbook, `Laporan_${currentUserName.replace(/\s+/g,'_')}.xlsx`);
-            exportSpinner.classList.add('hidden');
-            exportBtnText.textContent = 'Export';
-        }, 500);
-    };
-
-    /* ---------- UI restrictions for sales role ---------- */
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!isAdmin) {
-            // Hide weekly & monthly buttons
-            ['btnMingguan', 'btnBulanan'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            // Restrict sales person selectors
-            ['salesPerson', 'visitSalesPerson'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (sel) {
-                    sel.innerHTML = `<option value="${currentUserName}">${currentUserName}</option>`;
-                    sel.value = currentUserName;
-                    sel.disabled = true;
+                /* ---- Sales role UI restrictions ---- */
+                if (!isAdmin) {
+                    // Hide weekly & monthly buttons
+                    ['btnMingguan', 'btnBulanan'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.classList.add('hidden');
+                    });
+                    // Restrict dropdowns to current user
+                    ['salesPerson', 'visitSalesPerson'].forEach(id => {
+                        const sel = document.getElementById(id);
+                        if (sel) {
+                            sel.innerHTML = `<option value="${currentUserName}">${currentUserName}</option>`;
+                            sel.value = currentUserName;
+                            sel.disabled = true;
+                        }
+                    });
                 }
             });
-        }
-    });
-})();
-</script>
+
+            /* --------- Override Dashboard & Report Functions --------- */
+            if (window.updateDashboardSummary) {
+                const origUpdateDashboardSummary = window.updateDashboardSummary;
+                window.updateDashboardSummary = function (type = 'daily') {
+                    if (isAdmin) {
+                        origUpdateDashboardSummary(type);
+                        return;
+                    }
+                    let totalSales = 0;
+                    let totalTransactions = 0;
+                    let data = [];
+                    if (type === 'daily') data = filterByUser(salesData.daily || []);
+                    else if (type === 'visit') data = filterByUser(visitData || []);
+                    else data = filterByUser(salesData.daily || []);
+                    data.forEach(item => {
+                        totalSales += item.sales || 0;
+                        totalTransactions += item.transactions || 0;
+                    });
+                    document.getElementById('totalSales').textContent = formatCurrency(totalSales);
+                    document.getElementById('totalTransactions').textContent = totalTransactions;
+                    document.getElementById('targetAchieved').textContent = '—';
+                    document.getElementById('targetProgressBar').style.width = '0%';
+                    document.getElementById('totalVisits').textContent = filterByUser(visitData || []).length;
+                };
+            }
+
+            if (window.updateReportTable) {
+                const origUpdateReportTable = window.updateReportTable;
+                window.updateReportTable = function (type = 'daily') {
+                    origUpdateReportTable(type);
+                    if (!isAdmin) {
+                        // Remove action column header
+                        const headerRow = document.getElementById('tableHeader');
+                        if (headerRow) {
+                            [...headerRow.children].forEach(th => {
+                                if (th.textContent.trim().toLowerCase() === 'aksi') th.remove();
+                            });
+                        }
+                        // Remove last cell of each row
+                        document.querySelectorAll('#reportTableBody tr').forEach(tr => {
+                            if (tr.lastElementChild) tr.removeChild(tr.lastElementChild);
+                        });
+                    }
+                };
+            }
+
+            if (window.exportToExcel) {
+                const origExportToExcel = window.exportToExcel;
+                window.exportToExcel = function () {
+                    if (isAdmin) {
+                        origExportToExcel();
+                        return;
+                    }
+                    const exportSpinner = document.getElementById('exportSpinner');
+                    const exportBtnText = document.getElementById('exportBtnText');
+                    if (exportSpinner && exportBtnText) {
+                        exportSpinner.classList.remove('hidden');
+                        exportBtnText.textContent = 'Mengekspor...';
+                    }
+                    setTimeout(() => {
+                        const dataToExport = filterByUser(salesData.daily || []).map(item => ({
+                            'Tanggal': formatDate(item.date),
+                            'Jumlah Transaksi': item.transactions,
+                            'Total Penjualan': item.sales,
+                            'Catatan': item.notes || ''
+                        }));
+                        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+                        const workbook = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+                        XLSX.writeFile(workbook, `Laporan_${currentUserName.replace(/\s+/g, '_')}.xlsx`);
+                        if (exportSpinner && exportBtnText) {
+                            exportSpinner.classList.add('hidden');
+                            exportBtnText.textContent = 'Export';
+                        }
+                    }, 400);
+                };
+            }
+        })();
+    </script>
 
 </body>
+
 </html>
