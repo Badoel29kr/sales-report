@@ -419,11 +419,8 @@
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required>
                                 <option value="">Pilih Sales</option>
-                                <option value="Budi Santoso">Budi Santoso</option>
-                                <option value="Dewi Lestari">Dewi Lestari</option>
-                                <option value="Ahmad Rizki">Ahmad Rizki</option>
-                                <option value="Siti Nurhaliza">Siti Nurhaliza</option>
-                                <option value="Rudi Hermawan">Rudi Hermawan</option>
+                                <option value="Tumir">Tumir</option>
+                                <option value="Yahya Toha">Yahya Toha</option>
                             </select>
                         </div>
                     </div>
@@ -1801,6 +1798,11 @@
                 document.getElementById('tabVisit').classList.remove('subtab-active');
                 document.getElementById('dailyReportForm').classList.remove('hidden');
                 document.getElementById('visitReportForm').classList.add('hidden');
+                currentPage = 1;                 // reset paginasi
+                currentView = 'daily';           // tampilkan laporan harian
+                updateDashboardSummary(currentView);
+                initSalesChart(currentChartType);
+                updateReportTable(currentView);
             });
 
             document.getElementById('tabVisit').addEventListener('click', function () {
@@ -1808,6 +1810,10 @@
                 document.getElementById('tabVisit').classList.add('subtab-active');
                 document.getElementById('dailyReportForm').classList.add('hidden');
                 document.getElementById('visitReportForm').classList.remove('hidden');
+                currentPage = 1;
+                currentView = 'visit';           // tampilkan laporan kunjungan
+                updateDashboardSummary();        // default ke harian (fungsi belum punya cabang 'visit')
+                updateReportTable(currentView);
             });
 
             // Chart type toggle
