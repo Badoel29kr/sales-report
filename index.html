@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesTracker Pro - Aplikasi Laporan Sales Marketing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS library for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .tab-active {
+            border-bottom: 3px solid #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .subtab-active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.375rem;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.875rem;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            border-radius: 0.375rem;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .chart-toggle-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+        .chart-toggle-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .chart-toggle-btn:not(.active) {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        .welcome-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4f46e5;
+            margin-bottom: 1rem;
+        }
+        .welcome-text {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .welcome-btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .welcome-btn:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Welcome Modal for First-time Users -->
+    <div id="welcomeModal" class="welcome-modal hidden">
+        <div class="welcome-content">
+            <div class="welcome-title">Selamat Datang di SalesTracker Pro!</div>
+            <div class="welcome-text">
+                <p class="mb-3">Terima kasih telah menggunakan aplikasi SalesTracker Pro untuk mengelola laporan sales marketing Anda.</p>
+                <p class="mb-3">Dengan aplikasi ini, Anda dapat:</p>
+                <ul class="list-disc pl-5 mb-3">
+                    <li>Mencatat laporan penjualan harian</li>
+                    <li>Melacak kunjungan sales</li>
+                    <li>Melihat statistik dan grafik performa</li>
+                    <li>Mengekspor data ke Excel</li>
+                </ul>
+                <p>Semua data akan disimpan di browser Anda dan tidak akan hilang saat halaman di-refresh.</p>
+            </div>
+            <div class="flex justify-center">
+                <button id="welcomeCloseBtn" class="welcome-btn">Mulai Menggunakan</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="gradient-bg text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SalesTracker Pro</h1>
+            <div class="flex items-center space-x-4">
+                <span id="currentDate" class="hidden md:inline-block"></span>
+                <div class="relative">
+                    <button id="userMenuBtn" class="flex items-center space-x-2 focus:outline-none">
+                        <div class="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
+                            <span class="text-sm font-medium">AM</span>
+                        </div>
+                        <span class="hidden md:inline-block">Admin Marketing</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">Dashboard Laporan Sales</h2>
+            <div class="flex space-x-2">
+                <button id="btnHarian" class="tab-active px-4 py-2 text-sm">Harian</button>
+                <button id="btnMingguan" class="px-4 py-2 text-sm text-gray-600">Mingguan</button>
+                <button id="btnBulanan" class="px-4 py-2 text-sm text-gray-600">Bulanan</button>
+            </div>
+        </div>
+
+        <!-- Ringkasan Statistik -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="card bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Penjualan</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="totalSales">Rp 0</h3>
+                    </div>
+                    <div class="p-2 rounded-md bg-blue-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span id="salesChange" class="text-xs font-medium text-gray-600">Belum ada data perbandingan</span>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">Jumlah Transaksi</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="totalTransactions">0</h3>
+                    </div>
+                    <div class="p-2 rounded-md bg-purple-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span id="transactionChange" class="text-xs font-medium text-gray-600">Belum ada data perbandingan</span>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">Kunjungan</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="totalVisits">0</h3>
+                    </div>
+                    <div class="p-2 rounded-md bg-teal-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span id="visitChange" class="text-xs font-medium text-gray-600">Belum ada data perbandingan</span>
+                </div>
+            </div>
+
+            <div class="card bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500">Target Tercapai</p>
+                        <h3 class="text-2xl font-bold text-gray-800" id="targetAchieved">0%</h3>
+                    </div>
+                    <div class="p-2 rounded-md bg-yellow-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="targetProgressBar" class="bg-yellow-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafik Penjualan -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-gray-800">Tren Penjualan</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex border rounded-md overflow-hidden">
+                            <button id="lineChartBtn" class="chart-toggle-btn active">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                </svg>
+                            </button>
+                            <button id="barChartBtn" class="chart-toggle-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <select id="salesPeriod" class="text-sm border rounded-md px-2 py-1">
+                            <option value="7">7 Hari Terakhir</option>
+                            <option value="30">30 Hari Terakhir</option>
+                            <option value="90">90 Hari Terakhir</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-semibold text-gray-800 mb-4">Performa Sales</h3>
+                <div class="h-64">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Input Tabs -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <div class="flex border-b border-gray-200 mb-4">
+                <button id="tabSales" class="subtab-active px-4 py-2 text-sm rounded-t-md mr-2">Laporan Penjualan</button>
+                <button id="tabVisit" class="px-4 py-2 text-sm bg-gray-100 rounded-t-md">Laporan Kunjungan</button>
+            </div>
+
+            <!-- Form Input Laporan Harian -->
+            <div id="dailyReportForm" class="p-2">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Laporan Harian</h3>
+                <form id="salesForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                            <input type="date" id="reportDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sales</label>
+                            <select id="salesPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Pilih Sales</option>
+                                <option value="Budi Santoso">Budi Santoso</option>
+                                <option value="Dewi Lestari">Dewi Lestari</option>
+                                <option value="Ahmad Rizki">Ahmad Rizki</option>
+                                <option value="Siti Nurhaliza">Siti Nurhaliza</option>
+                                <option value="Rudi Hermawan">Rudi Hermawan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Transaksi</label>
+                            <input type="number" id="transactionCount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Penjualan (Rp)</label>
+                            <input type="number" id="salesAmount" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Target Harian (Rp)</label>
+                            <input type="number" id="dailyTarget" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0" required min="0">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                        <textarea id="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tambahkan catatan atau keterangan..."></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan Laporan</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Form Input Laporan Kunjungan -->
+            <div id="visitReportForm" class="p-2 hidden">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Input Laporan Kunjungan</h3>
+                <form id="visitForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kunjungan</label>
+                            <input type="date" id="visitDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sales</label>
+                            <select id="visitSalesPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Pilih Sales</option>
+                                <option value="Budi Santoso">Budi Santoso</option>
+                                <option value="Dewi Lestari">Dewi Lestari</option>
+                                <option value="Ahmad Rizki">Ahmad Rizki</option>
+                                <option value="Siti Nurhaliza">Siti Nurhaliza</option>
+                                <option value="Rudi Hermawan">Rudi Hermawan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Perusahaan/Klien</label>
+                            <input type="text" id="clientCompany" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama perusahaan atau klien" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                            <input type="text" id="clientAddress" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Alamat klien">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Bertemu Dengan</label>
+                            <input type="text" id="contactPerson" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama kontak" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
+                            <input type="text" id="contactPosition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jabatan kontak">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                            <input type="tel" id="contactPhone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor telepon kontak">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hasil Kunjungan</label>
+                        <select id="visitResult" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2" required>
+                            <option value="">Pilih Hasil</option>
+                            <option value="Presentasi">Presentasi</option>
+                            <option value="Penawaran">Penawaran</option>
+                            <option value="Negosiasi">Negosiasi</option>
+                            <option value="Deal">Deal</option>
+                            <option value="Follow Up">Follow Up</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                        <textarea id="visitNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Detail hasil kunjungan..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tindak Lanjut</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <select id="followUpType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">Pilih Tindak Lanjut</option>
+                                    <option value="Telepon">Telepon</option>
+                                    <option value="Email">Email</option>
+                                    <option value="Kunjungan">Kunjungan Kembali</option>
+                                    <option value="Presentasi">Presentasi</option>
+                                    <option value="Demo">Demo Produk</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="date" id="followUpDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tanggal tindak lanjut" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Simpan Laporan Kunjungan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabel Laporan -->
+        <div id="reportTableContainer" class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800" id="reportTableTitle">Laporan Harian</h3>
+                <div class="flex space-x-2">
+                    <input type="text" id="searchReport" placeholder="Cari..." class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="dropdown">
+                        <button id="exportBtn" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm flex items-center">
+                            <span id="exportBtnText">Export</span>
+                            <span id="exportSpinner" class="ml-2 loading-spinner hidden"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="#" id="exportXLSX">Export ke Excel (.xlsx)</a>
+                            <a href="#" id="exportPDF" class="text-gray-400 cursor-not-allowed">Export ke PDF (.pdf)</a>
+                            <a href="#" id="exportCSV" class="text-gray-400 cursor-not-allowed">Export ke CSV (.csv)</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="emptyTableMessage" class="py-8 text-center text-gray-500">
+                Belum ada data. Silakan tambahkan data baru melalui form di atas.
+            </div>
+            <table class="min-w-full divide-y divide-gray-200 hidden" id="reportTable">
+                <thead class="bg-gray-50">
+                    <tr id="tableHeader">
+                        <!-- Table headers will be inserted here -->
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Table rows will be inserted here -->
+                </tbody>
+            </table>
+            <div class="mt-4 flex justify-between items-center">
+                <p class="text-sm text-gray-500" id="reportCount">Menampilkan 0 data</p>
+                <div class="flex space-x-2">
+                    <button id="prevPage" class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Sebelumnya</button>
+                    <button id="nextPage" class="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50">Selanjutnya</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Detail Kunjungan -->
+        <div id="visitDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4">
+                <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">Detail Kunjungan</h3>
+                    <button id="closeVisitDetail" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6" id="visitDetailContent">
+                    <!-- Visit detail content will be inserted here -->
+                </div>
+                <div class="p-4 border-t border-gray-200 flex justify-end">
+                    <button id="closeVisitDetailBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+                <div class="p-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800" id="confirmationTitle">Konfirmasi</h3>
+                </div>
+                <div class="p-6" id="confirmationContent">
+                    Apakah Anda yakin ingin menghapus data ini?
+                </div>
+                <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button id="cancelConfirmation" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Batal</button>
+                    <button id="confirmAction" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let salesData = {
+            daily: [],
+            weekly: [],
+            monthly: []
+        };
+        let visitData = [];
+        let salesPerformanceData = [];
+
+        // Current view state
+        let currentView = 'daily';
+        let currentChartType = 'line';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let deleteItemId = null;
+        let deleteItemType = null;
+
+        // Check if this is the first visit
+        const checkFirstVisit = () => {
+            const visited = localStorage.getItem('salesTrackerVisited');
+            if (!visited) {
+                document.getElementById('welcomeModal').classList.remove('hidden');
+                localStorage.setItem('salesTrackerVisited', 'true');
+            }
+        };
+
+        // Close welcome modal
+        document.getElementById('welcomeCloseBtn').addEventListener('click', function() {
+            document.getElementById('welcomeModal').classList.add('hidden');
+        });
+
+        // Load data from localStorage
+        const loadData = () => {
+            const savedSalesData = localStorage.getItem('salesData');
+            const savedVisitData = localStorage.getItem('visitData');
+            const savedPerformanceData = localStorage.getItem('salesPerformanceData');
+            
+            if (savedSalesData) {
+                salesData = JSON.parse(savedSalesData);
+            }
+            
+            if (savedVisitData) {
+                visitData = JSON.parse(savedVisitData);
+            }
+            
+            if (savedPerformanceData) {
+                salesPerformanceData = JSON.parse(savedPerformanceData);
+            } else {
+                // Initialize with empty performance data for each sales person
+                const salesPersons = ['Budi Santoso', 'Dewi Lestari', 'Ahmad Rizki', 'Siti Nurhaliza', 'Rudi Hermawan'];
+                salesPerformanceData = salesPersons.map(name => ({
+                    name,
+                    sales: 0,
+                    target: 0,
+                    percentage: 0
+                }));
+                localStorage.setItem('salesPerformanceData', JSON.stringify(salesPerformanceData));
+            }
+        };
+
+        // Save data to localStorage
+        const saveData = () => {
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            localStorage.setItem('visitData', JSON.stringify(visitData));
+            localStorage.setItem('salesPerformanceData', JSON.stringify(salesPerformanceData));
+        };
+
+        // Current date display
+        const updateCurrentDate = () => {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+            
+            // Set default date for report forms
+            document.getElementById('reportDate').valueAsDate = now;
+            document.getElementById('visitDate').valueAsDate = now;
+            
+            // Set default follow-up date (7 days from now)
+            const followUpDate = new Date();
+            followUpDate.setDate(followUpDate.getDate() + 7);
+            document.getElementById('followUpDate').valueAsDate = followUpDate;
+        };
+
+        // Format currency
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        };
+
+        // Format date
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        };
+
+        // Update dashboard summary
+        const updateDashboardSummary = (type = 'daily') => {
+            let totalSales = 0;
+            let totalTransactions = 0;
+            let data;
+
+            if (type === 'daily') {
+                data = salesData.daily;
+            } else if (type === 'weekly') {
+                data = salesData.weekly;
+            } else {
+                data = salesData.monthly;
+            }
+
+            if (data.length > 0) {
+                data.forEach(item => {
+                    totalSales += item.sales;
+                    if (item.transactions) totalTransactions += item.transactions;
+                });
+
+                const targetAchieved = data.reduce((sum, item) => {
+                    const itemTarget = item.target || 0;
+                    const itemTargetAchieved = itemTarget > 0 ? (item.sales / itemTarget) * 100 : 0;
+                    return sum + (item.targetAchieved || itemTargetAchieved);
+                }, 0) / data.length;
+
+                document.getElementById('totalSales').textContent = formatCurrency(totalSales);
+                document.getElementById('totalTransactions').textContent = totalTransactions;
+                document.getElementById('targetAchieved').textContent = `${Math.round(targetAchieved)}%`;
+                document.getElementById('targetProgressBar').style.width = `${targetAchieved}%`;
+            } else {
+                document.getElementById('totalSales').textContent = formatCurrency(0);
+                document.getElementById('totalTransactions').textContent = '0';
+                document.getElementById('targetAchieved').textContent = '0%';
+                document.getElementById('targetProgressBar').style.width = '0%';
+            }
+
+            const totalVisits = visitData.length;
+            document.getElementById('totalVisits').textContent = totalVisits;
+        };
+
+        // Calculate weekly and monthly summaries
+        const calculateSummaries = () => {
+            // Reset weekly and monthly data
+            salesData.weekly = [];
+            salesData.monthly = [];
+            
+            if (salesData.daily.length === 0) return;
+            
+            // Sort daily data by date
+            const sortedDailyData = [...salesData.daily].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Group by week
+            const weeklyGroups = {};
+            sortedDailyData.forEach(item => {
+                const date = new Date(item.date);
+                const year = date.getFullYear();
+                const weekNumber = getWeekNumber(date);
+                const weekKey = `${year}-W${weekNumber}`;
+                
+                if (!weeklyGroups[weekKey]) {
+                    weeklyGroups[weekKey] = {
+                        week: `Minggu ${weekNumber}, ${year}`,
+                        sales: 0,
+                        transactions: 0,
+                        days: 0
+                    };
+                }
+                
+                weeklyGroups[weekKey].sales += item.sales;
+                weeklyGroups[weekKey].transactions += item.transactions;
+                weeklyGroups[weekKey].days++;
+            });
+            
+            // Calculate weekly averages and create weekly data
+            Object.values(weeklyGroups).forEach(week => {
+                const avgDaily = week.sales / week.days;
+                const targetAchieved = calculateWeeklyTargetAchievement(week.week);
+                
+                salesData.weekly.push({
+                    week: week.week,
+                    sales: week.sales,
+                    transactions: week.transactions,
+                    avgDaily: avgDaily,
+                    targetAchieved: targetAchieved
+                });
+            });
+            
+            // Group by month
+            const monthlyGroups = {};
+            sortedDailyData.forEach(item => {
+                const date = new Date(item.date);
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthKey = `${year}-${month}`;
+                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                
+                if (!monthlyGroups[monthKey]) {
+                    monthlyGroups[monthKey] = {
+                        month: `${monthNames[month]} ${year}`,
+                        sales: 0,
+                        transactions: 0,
+                        days: 0
+                    };
+                }
+                
+                monthlyGroups[monthKey].sales += item.sales;
+                monthlyGroups[monthKey].transactions += item.transactions;
+                monthlyGroups[monthKey].days++;
+            });
+            
+            // Calculate monthly averages and create monthly data
+            Object.values(monthlyGroups).forEach(month => {
+                const weeksInMonth = Math.ceil(month.days / 7);
+                const avgWeekly = month.sales / weeksInMonth;
+                const targetAchieved = calculateMonthlyTargetAchievement(month.month);
+                
+                salesData.monthly.push({
+                    month: month.month,
+                    sales: month.sales,
+                    transactions: month.transactions,
+                    avgWeekly: avgWeekly,
+                    targetAchieved: targetAchieved
+                });
+            });
+            
+            // Sort weekly and monthly data
+            salesData.weekly.sort((a, b) => {
+                const aMatch = a.week.match(/Minggu (\d+), (\d+)/);
+                const bMatch = b.week.match(/Minggu (\d+), (\d+)/);
+                
+                if (aMatch && bMatch) {
+                    const aYear = parseInt(aMatch[2]);
+                    const bYear = parseInt(bMatch[2]);
+                    
+                    if (aYear !== bYear) return aYear - bYear;
+                    
+                    const aWeek = parseInt(aMatch[1]);
+                    const bWeek = parseInt(bMatch[1]);
+                    return aWeek - bWeek;
+                }
+                
+                return 0;
+            });
+            
+            salesData.monthly.sort((a, b) => {
+                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const aMatch = a.month.match(/(\w+) (\d+)/);
+                const bMatch = b.month.match(/(\w+) (\d+)/);
+                
+                if (aMatch && bMatch) {
+                    const aYear = parseInt(aMatch[2]);
+                    const bYear = parseInt(bMatch[2]);
+                    
+                    if (aYear !== bYear) return aYear - bYear;
+                    
+                    const aMonth = monthNames.indexOf(aMatch[1]);
+                    const bMonth = monthNames.indexOf(bMatch[1]);
+                    return aMonth - bMonth;
+                }
+                
+                return 0;
+            });
+            
+            // Save updated data
+            saveData();
+        };
+
+        // Helper function to get week number
+        const getWeekNumber = (date) => {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        };
+
+        // Calculate weekly target achievement
+        const calculateWeeklyTargetAchievement = (weekStr) => {
+            const match = weekStr.match(/Minggu (\d+), (\d+)/);
+            if (!match) return 0;
+            
+            const weekNumber = parseInt(match[1]);
+            const year = parseInt(match[2]);
+            
+            // Filter daily data for this week
+            const weekData = salesData.daily.filter(item => {
+                const date = new Date(item.date);
+                return date.getFullYear() === year && getWeekNumber(date) === weekNumber;
+            });
+            
+            if (weekData.length === 0) return 0;
+            
+            const totalSales = weekData.reduce((sum, item) => sum + item.sales, 0);
+            const totalTarget = weekData.reduce((sum, item) => sum + (item.target || 0), 0);
+            
+            return totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
+        };
+
+        // Calculate monthly target achievement
+        const calculateMonthlyTargetAchievement = (monthStr) => {
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const match = monthStr.match(/(\w+) (\d+)/);
+            if (!match) return 0;
+            
+            const monthName = match[1];
+            const year = parseInt(match[2]);
+            const monthIndex = monthNames.indexOf(monthName);
+            
+            if (monthIndex === -1) return 0;
+            
+            // Filter daily data for this month
+            const monthData = salesData.daily.filter(item => {
+                const date = new Date(item.date);
+                return date.getFullYear() === year && date.getMonth() === monthIndex;
+            });
+            
+            if (monthData.length === 0) return 0;
+            
+            const totalSales = monthData.reduce((sum, item) => sum + item.sales, 0);
+            const totalTarget = monthData.reduce((sum, item) => sum + (item.target || 0), 0);
+            
+            return totalTarget > 0 ? Math.round((totalSales / totalTarget) * 100) : 0;
+        };
+
+        // Update sales performance data
+        const updateSalesPerformance = () => {
+            // Reset sales performance data
+            salesPerformanceData.forEach(item => {
+                item.sales = 0;
+                item.target = 0;
+                item.percentage = 0;
+            });
+            
+            // Calculate sales and targets for each sales person
+            salesData.daily.forEach(item => {
+                const salesPerson = salesPerformanceData.find(sp => sp.name === item.salesPerson);
+                if (salesPerson) {
+                    salesPerson.sales += item.sales;
+                    salesPerson.target += (item.target || 0);
+                }
+            });
+            
+            // Calculate percentages
+            salesPerformanceData.forEach(item => {
+                item.percentage = item.target > 0 ? Math.round((item.sales / item.target) * 100) : 0;
+            });
+            
+            // Save updated data
+            saveData();
+        };
+
+        // Initialize sales chart
+        const initSalesChart = (type = 'line') => {
+            if (window.salesChart) {
+                window.salesChart.destroy();
+            }
+            
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Get data based on current view
+            let labels = [];
+            let salesValues = [];
+            
+            if (currentView === 'daily' && salesData.daily.length > 0) {
+                // Sort by date
+                const sortedData = [...salesData.daily].sort((a, b) => new Date(a.date) - new Date(b.date));
+                labels = sortedData.map(item => {
+                    const date = new Date(item.date);
+                    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                });
+                salesValues = sortedData.map(item => item.sales / 1000000);
+            } else if (currentView === 'weekly' && salesData.weekly.length > 0) {
+                labels = salesData.weekly.map(item => item.week.replace('Minggu ', 'M'));
+                salesValues = salesData.weekly.map(item => item.sales / 1000000);
+            } else if (currentView === 'monthly' && salesData.monthly.length > 0) {
+                labels = salesData.monthly.map(item => item.month);
+                salesValues = salesData.monthly.map(item => item.sales / 1000000);
+            } else {
+                // No data or invalid view
+                labels = ['Belum ada data'];
+                salesValues = [0];
+            }
+            
+            // Set current chart type
+            currentChartType = type;
+            
+            // Update toggle buttons
+            document.getElementById('lineChartBtn').classList.toggle('active', type === 'line');
+            document.getElementById('barChartBtn').classList.toggle('active', type === 'bar');
+            
+            window.salesChart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Penjualan (Juta Rp)',
+                        data: salesValues,
+                        backgroundColor: type === 'line' ? 'rgba(79, 70, 229, 0.2)' : 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                        fill: type === 'line'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' Jt';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Penjualan: ${context.parsed.y} Juta Rupiah`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        // Initialize performance chart
+        const initPerformanceChart = () => {
+            if (window.performanceChart) {
+                window.performanceChart.destroy();
+            }
+            
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Filter out sales persons with no data
+            const filteredData = salesPerformanceData.filter(item => item.target > 0);
+            
+            if (filteredData.length === 0) {
+                // No performance data yet
+                window.performanceChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Belum ada data performa'],
+                        datasets: [{
+                            label: 'Penjualan',
+                            data: [0],
+                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+            
+            // Sort data by percentage for better visualization
+            const sortedData = [...filteredData].sort((a, b) => a.percentage - b.percentage);
+            
+            const labels = sortedData.map(item => item.name);
+            const salesValues = sortedData.map(item => item.sales / 1000000);
+            const targetValues = sortedData.map(item => item.target / 1000000);
+            
+            // Create color array based on performance
+            const barColors = sortedData.map(item => 
+                item.percentage >= 100 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(234, 179, 8, 0.7)'
+            );
+            
+            window.performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Penjualan (Juta Rp)',
+                            data: salesValues,
+                            backgroundColor: barColors,
+                            borderColor: sortedData.map(item => 
+                                item.percentage >= 100 ? 'rgba(34, 197, 94, 1)' : 'rgba(234, 179, 8, 1)'
+                            ),
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Target (Juta Rp)',
+                            data: targetValues,
+                            type: 'line',
+                            borderColor: 'rgba(107, 114, 128, 0.8)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' Jt';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label || '';
+                                    const value = context.parsed.x;
+                                    const index = context.dataIndex;
+                                    const percentage = sortedData[index].percentage;
+                                    
+                                    if (context.datasetIndex === 0) {
+                                        return [
+                                            `${datasetLabel}: ${value} Juta Rupiah`,
+                                            `Pencapaian: ${percentage}%`
+                                        ];
+                                    } else {
+                                        return `${datasetLabel}: ${value} Juta Rupiah`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        // Update report table
+        const updateReportTable = (type = 'daily') => {
+            const tableHeader = document.getElementById('tableHeader');
+            const tableBody = document.getElementById('reportTableBody');
+            const tableTitle = document.getElementById('reportTableTitle');
+            const emptyMessage = document.getElementById('emptyTableMessage');
+            const table = document.getElementById('reportTable');
+            
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            let headers = [];
+            let data = [];
+            
+            // Update current view
+            currentView = type;
+            
+            if (type === 'daily') {
+                tableTitle.textContent = 'Laporan Harian';
+                headers = ['Tanggal', 'Sales', 'Jumlah Transaksi', 'Total Penjualan', 'Target', 'Pencapaian', 'Catatan', 'Aksi'];
+                data = salesData.daily;
+            } else if (type === 'weekly') {
+                tableTitle.textContent = 'Rekap Mingguan';
+                headers = ['Minggu', 'Total Penjualan', 'Jumlah Transaksi', 'Rata-rata Harian', 'Pencapaian Target', 'Aksi'];
+                data = salesData.weekly;
+            } else if (type === 'monthly') {
+                tableTitle.textContent = 'Rekap Bulanan';
+                headers = ['Bulan', 'Total Penjualan', 'Jumlah Transaksi', 'Rata-rata Mingguan', 'Pencapaian Target', 'Aksi'];
+                data = salesData.monthly;
+            } else if (type === 'visit') {
+                tableTitle.textContent = 'Laporan Kunjungan';
+                headers = ['Tanggal', 'Sales', 'Perusahaan', 'Kontak', 'Jabatan', 'Hasil', 'Tindak Lanjut', 'Aksi'];
+                data = visitData;
+            }
+            
+            // Check if there's data to display
+            if (data.length === 0) {
+                emptyMessage.classList.remove('hidden');
+                table.classList.add('hidden');
+                document.getElementById('reportCount').textContent = 'Menampilkan 0 data';
+                return;
+            } else {
+                emptyMessage.classList.add('hidden');
+                table.classList.remove('hidden');
+            }
+            
+            // Create table headers
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                th.textContent = header;
+                tableHeader.appendChild(th);
+            });
+            
+            // Pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = data.slice(startIndex, endIndex);
+            
+            // Create table rows
+            paginatedData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                
+                if (type === 'daily') {
+                    const date = new Date(item.date);
+                    const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    const targetAchieved = item.target > 0 ? Math.round((item.sales / item.target) * 100) : 0;
+                    
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formattedDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.transactions}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.target)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-900 mr-2">${targetAchieved}%</span>
+                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-${targetAchieved >= 100 ? 'green' : 'yellow'}-500 h-2 rounded-full" style="width: ${Math.min(targetAchieved, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.notes || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-blue-600 hover:text-blue-900 mr-2 edit-daily" data-index="${startIndex + index}">Edit</button>
+                            <button class="text-red-600 hover:text-red-900 delete-daily" data-index="${startIndex + index}">Hapus</button>
+                        </td>
+                    `;
+                } else if (type === 'weekly') {
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.week}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.transactions}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.avgDaily)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-900 mr-2">${item.targetAchieved}%</span>
+                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-${item.targetAchieved >= 100 ? 'green' : 'yellow'}-500 h-2 rounded-full" style="width: ${Math.min(item.targetAchieved, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-blue-600 hover:text-blue-900 view-weekly-detail" data-week="${item.week}">Detail</button>
+                        </td>
+                    `;
+                } else if (type === 'monthly') {
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.month}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.transactions}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.avgWeekly)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-900 mr-2">${item.targetAchieved}%</span>
+                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-${item.targetAchieved >= 100 ? 'green' : 'yellow'}-500 h-2 rounded-full" style="width: ${Math.min(item.targetAchieved, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-blue-600 hover:text-blue-900 view-monthly-detail" data-month="${item.month}">Detail</button>
+                        </td>
+                    `;
+                } else if (type === 'visit') {
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(item.date)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.clientCompany}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.contactPerson}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.contactPosition || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.result}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.followUpType} (${formatDate(item.followUpDate)})</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-blue-600 hover:text-blue-900 mr-2 view-visit-detail" data-id="${item.id}">Detail</button>
+                            <button class="text-red-600 hover:text-red-900 delete-visit" data-id="${item.id}">Hapus</button>
+                        </td>
+                    `;
+                }
+                
+                tableBody.appendChild(tr);
+            });
+            
+            document.getElementById('reportCount').textContent = `Menampilkan ${paginatedData.length} dari ${data.length} data`;
+            
+            // Update pagination buttons
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = endIndex >= data.length;
+            
+            // Add event listeners to buttons
+            if (type === 'daily') {
+                const editButtons = document.querySelectorAll('.edit-daily');
+                const deleteButtons = document.querySelectorAll('.delete-daily');
+                
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        editDailyReport(index);
+                    });
+                });
+                
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        showDeleteConfirmation('daily', index);
+                    });
+                });
+            } else if (type === 'visit') {
+                const detailButtons = document.querySelectorAll('.view-visit-detail');
+                const deleteButtons = document.querySelectorAll('.delete-visit');
+                
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const visitId = parseInt(this.getAttribute('data-id'));
+                        showVisitDetail(visitId);
+                    });
+                });
+                
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const visitId = parseInt(this.getAttribute('data-id'));
+                        showDeleteConfirmation('visit', visitId);
+                    });
+                });
+            } else if (type === 'weekly') {
+                const detailButtons = document.querySelectorAll('.view-weekly-detail');
+                
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const week = this.getAttribute('data-week');
+                        showWeeklyDetail(week);
+                    });
+                });
+            } else if (type === 'monthly') {
+                const detailButtons = document.querySelectorAll('.view-monthly-detail');
+                
+                detailButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const month = this.getAttribute('data-month');
+                        showMonthlyDetail(month);
+                    });
+                });
+            }
+        };
+
+        // Edit daily report
+        const editDailyReport = (index) => {
+            const report = salesData.daily[index];
+            if (!report) return;
+            
+            document.getElementById('reportDate').value = report.date;
+            document.getElementById('salesPerson').value = report.salesPerson;
+            document.getElementById('transactionCount').value = report.transactions;
+            document.getElementById('salesAmount').value = report.sales;
+            document.getElementById('dailyTarget').value = report.target;
+            document.getElementById('notes').value = report.notes || '';
+            
+            // Remove the report from the array
+            salesData.daily.splice(index, 1);
+            
+            // Update UI
+            updateDashboardSummary(currentView);
+            updateSalesPerformance();
+            calculateSummaries();
+            initSalesChart(currentChartType);
+            initPerformanceChart();
+            updateReportTable(currentView);
+            
+            // Scroll to form
+            document.getElementById('dailyReportForm').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        // Show delete confirmation
+        const showDeleteConfirmation = (type, id) => {
+            deleteItemType = type;
+            deleteItemId = id;
+            
+            const confirmationTitle = document.getElementById('confirmationTitle');
+            const confirmationContent = document.getElementById('confirmationContent');
+            
+            if (type === 'daily') {
+                confirmationTitle.textContent = 'Hapus Laporan Harian';
+                confirmationContent.textContent = 'Apakah Anda yakin ingin menghapus laporan harian ini? Tindakan ini tidak dapat dibatalkan.';
+            } else if (type === 'visit') {
+                confirmationTitle.textContent = 'Hapus Laporan Kunjungan';
+                confirmationContent.textContent = 'Apakah Anda yakin ingin menghapus laporan kunjungan ini? Tindakan ini tidak dapat dibatalkan.';
+            }
+            
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        };
+
+        // Delete item
+        const deleteItem = () => {
+            if (deleteItemType === 'daily') {
+                salesData.daily.splice(deleteItemId, 1);
+                updateSalesPerformance();
+                calculateSummaries();
+            } else if (deleteItemType === 'visit') {
+                const index = visitData.findIndex(item => item.id === deleteItemId);
+                if (index !== -1) {
+                    visitData.splice(index, 1);
+                }
+            }
+            
+            // Save data
+            saveData();
+            
+            // Update UI
+            updateDashboardSummary(currentView);
+            initSalesChart(currentChartType);
+            initPerformanceChart();
+            updateReportTable(currentView);
+            
+            // Close modal
+            document.getElementById('confirmationModal').classList.add('hidden');
+        };
+
+        // Show visit detail modal
+        const showVisitDetail = (visitId) => {
+            const visit = visitData.find(v => v.id === visitId);
+            if (!visit) return;
+            
+            const detailContent = document.getElementById('visitDetailContent');
+            detailContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tanggal Kunjungan</p>
+                        <p class="text-base">${formatDate(visit.date)}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Sales</p>
+                        <p class="text-base">${visit.salesPerson}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-500">Perusahaan/Klien</p>
+                    <p class="text-base">${visit.clientCompany}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-500">Alamat</p>
+                    <p class="text-base">${visit.clientAddress || '-'}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Bertemu Dengan</p>
+                        <p class="text-base">${visit.contactPerson}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Jabatan</p>
+                        <p class="text-base">${visit.contactPosition || '-'}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Nomor Telepon</p>
+                        <p class="text-base">${visit.contactPhone || '-'}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-500">Hasil Kunjungan</p>
+                    <p class="text-base">${visit.result}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-sm font-medium text-gray-500">Catatan Kunjungan</p>
+                    <p class="text-base">${visit.visitNotes || '-'}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tindak Lanjut</p>
+                        <p class="text-base">${visit.followUpType}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tanggal Tindak Lanjut</p>
+                        <p class="text-base">${formatDate(visit.followUpDate)}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('visitDetailModal').classList.remove('hidden');
+        };
+
+        // Show weekly detail
+        const showWeeklyDetail = (weekStr) => {
+            const match = weekStr.match(/Minggu (\d+), (\d+)/);
+            if (!match) return;
+            
+            const weekNumber = parseInt(match[1]);
+            const year = parseInt(match[2]);
+            
+            // Filter daily data for this week
+            const weekData = salesData.daily.filter(item => {
+                const date = new Date(item.date);
+                return date.getFullYear() === year && getWeekNumber(date) === weekNumber;
+            });
+            
+            if (weekData.length === 0) return;
+            
+            // Create a simple report
+            let detailContent = `<h4 class="text-lg font-medium mb-4">Detail Minggu ${weekNumber}, ${year}</h4>`;
+            detailContent += `<p class="mb-4">Total penjualan: ${formatCurrency(weekData.reduce((sum, item) => sum + item.sales, 0))}</p>`;
+            detailContent += '<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penjualan</th>';
+            detailContent += '</tr></thead><tbody class="bg-white divide-y divide-gray-200">';
+            
+            weekData.forEach(item => {
+                detailContent += `<tr><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(item.date)}</td>`;
+                detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>`;
+                detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td></tr>`;
+            });
+            
+            detailContent += '</tbody></table>';
+            
+            document.getElementById('visitDetailContent').innerHTML = detailContent;
+            document.getElementById('visitDetailModal').classList.remove('hidden');
+        };
+
+        // Show monthly detail
+        const showMonthlyDetail = (monthStr) => {
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const match = monthStr.match(/(\w+) (\d+)/);
+            if (!match) return;
+            
+            const monthName = match[1];
+            const year = parseInt(match[2]);
+            const monthIndex = monthNames.indexOf(monthName);
+            
+            if (monthIndex === -1) return;
+            
+            // Filter daily data for this month
+            const monthData = salesData.daily.filter(item => {
+                const date = new Date(item.date);
+                return date.getFullYear() === year && date.getMonth() === monthIndex;
+            });
+            
+            if (monthData.length === 0) return;
+            
+            // Create a simple report
+            let detailContent = `<h4 class="text-lg font-medium mb-4">Detail Bulan ${monthName} ${year}</h4>`;
+            detailContent += `<p class="mb-4">Total penjualan: ${formatCurrency(monthData.reduce((sum, item) => sum + item.sales, 0))}</p>`;
+            detailContent += '<table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>';
+            detailContent += '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penjualan</th>';
+            detailContent += '</tr></thead><tbody class="bg-white divide-y divide-gray-200">';
+            
+            monthData.forEach(item => {
+                detailContent += `<tr><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(item.date)}</td>`;
+                detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.salesPerson}</td>`;
+                detailContent += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(item.sales)}</td></tr>`;
+            });
+            
+            detailContent += '</tbody></table>';
+            
+            document.getElementById('visitDetailContent').innerHTML = detailContent;
+            document.getElementById('visitDetailModal').classList.remove('hidden');
+        };
+
+        // Export data to Excel
+        const exportToExcel = () => {
+            const exportSpinner = document.getElementById('exportSpinner');
+            const exportBtnText = document.getElementById('exportBtnText');
+            
+            exportSpinner.classList.remove('hidden');
+            exportBtnText.textContent = 'Mengekspor...';
+            
+            setTimeout(() => {
+                let dataToExport = [];
+                let fileName = '';
+                
+                if (currentView === 'daily') {
+                    dataToExport = salesData.daily.map(item => ({
+                        'Tanggal': formatDate(item.date),
+                        'Sales': item.salesPerson,
+                        'Jumlah Transaksi': item.transactions,
+                        'Total Penjualan': item.sales,
+                        'Target': item.target || 0,
+                        'Pencapaian': item.target > 0 ? `${Math.round((item.sales / item.target) * 100)}%` : '0%',
+                        'Catatan': item.notes || ''
+                    }));
+                    fileName = 'Laporan_Penjualan_Harian.xlsx';
+                } else if (currentView === 'weekly') {
+                    dataToExport = salesData.weekly.map(item => ({
+                        'Minggu': item.week,
+                        'Total Penjualan': item.sales,
+                        'Jumlah Transaksi': item.transactions,
+                        'Rata-rata Harian': item.avgDaily,
+                        'Pencapaian Target': `${item.targetAchieved}%`
+                    }));
+                    fileName = 'Rekap_Penjualan_Mingguan.xlsx';
+                } else if (currentView === 'monthly') {
+                    dataToExport = salesData.monthly.map(item => ({
+                        'Bulan': item.month,
+                        'Total Penjualan': item.sales,
+                        'Jumlah Transaksi': item.transactions,
+                        'Rata-rata Mingguan': item.avgWeekly,
+                        'Pencapaian Target': `${item.targetAchieved}%`
+                    }));
+                    fileName = 'Rekap_Penjualan_Bulanan.xlsx';
+                } else if (currentView === 'visit') {
+                    dataToExport = visitData.map(item => ({
+                        'Tanggal Kunjungan': formatDate(item.date),
+                        'Sales': item.salesPerson,
+                        'Perusahaan/Klien': item.clientCompany,
+                        'Alamat': item.clientAddress || '',
+                        'Kontak': item.contactPerson,
+                        'Jabatan': item.contactPosition || '',
+                        'Telepon': item.contactPhone || '',
+                        'Hasil Kunjungan': item.result,
+                        'Catatan Kunjungan': item.visitNotes || '',
+                        'Tindak Lanjut': item.followUpType,
+                        'Tanggal Tindak Lanjut': formatDate(item.followUpDate)
+                    }));
+                    fileName = 'Laporan_Kunjungan.xlsx';
+                }
+                
+                const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+                
+                // Generate Excel file and trigger download
+                XLSX.writeFile(workbook, fileName);
+                
+                exportSpinner.classList.add('hidden');
+                exportBtnText.textContent = 'Export';
+            }, 500);
+        };
+
+        // Handle form submissions
+        const handleSalesFormSubmit = (e) => {
+            e.preventDefault();
+            
+            const date = document.getElementById('reportDate').value;
+            const salesPerson = document.getElementById('salesPerson').value;
+            const transactions = parseInt(document.getElementById('transactionCount').value);
+            const sales = parseInt(document.getElementById('salesAmount').value);
+            const target = parseInt(document.getElementById('dailyTarget').value);
+            const notes = document.getElementById('notes').value;
+            
+            // Create new report object
+            const newReport = {
+                date,
+                salesPerson,
+                transactions,
+                sales,
+                target,
+                notes
+            };
+            
+            // Add to daily reports
+            salesData.daily.push(newReport);
+            
+            // Update performance data
+            updateSalesPerformance();
+            
+            // Calculate weekly and monthly summaries
+            calculateSummaries();
+            
+            // Save data
+            saveData();
+            
+            // Update UI
+            updateDashboardSummary(currentView);
+            initSalesChart(currentChartType);
+            initPerformanceChart();
+            updateReportTable(currentView);
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('reportDate').valueAsDate = new Date();
+            
+            // Show success message
+            alert('Laporan penjualan berhasil disimpan!');
+        };
+
+        const handleVisitFormSubmit = (e) => {
+            e.preventDefault();
+            
+            const date = document.getElementById('visitDate').value;
+            const salesPerson = document.getElementById('visitSalesPerson').value;
+            const clientCompany = document.getElementById('clientCompany').value;
+            const clientAddress = document.getElementById('clientAddress').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const contactPosition = document.getElementById('contactPosition').value;
+            const contactPhone = document.getElementById('contactPhone').value;
+            const result = document.getElementById('visitResult').value;
+            const visitNotes = document.getElementById('visitNotes').value;
+            const followUpType = document.getElementById('followUpType').value;
+            const followUpDate = document.getElementById('followUpDate').value;
+            
+            // Create new visit report object
+            const newVisit = {
+                id: Date.now(), // Simple unique ID
+                date,
+                salesPerson,
+                clientCompany,
+                clientAddress,
+                contactPerson,
+                contactPosition,
+                contactPhone,
+                result,
+                visitNotes,
+                followUpType,
+                followUpDate
+            };
+            
+            // Add to visit reports
+            visitData.push(newVisit);
+            
+            // Save data
+            saveData();
+            
+            // Update UI
+            updateDashboardSummary(currentView);
+            updateReportTable(currentView);
+            
+            // Reset form
+            e.target.reset();
+            document.getElementById('visitDate').valueAsDate = new Date();
+            
+            // Set default follow-up date (7 days from now)
+            const followUpDateDefault = new Date();
+            followUpDateDefault.setDate(followUpDateDefault.getDate() + 7);
+            document.getElementById('followUpDate').valueAsDate = followUpDateDefault;
+            
+            // Show success message
+            alert('Laporan kunjungan berhasil disimpan!');
+        };
+
+        // Initialize event listeners
+        const initEventListeners = () => {
+            // View toggle buttons
+            document.getElementById('btnHarian').addEventListener('click', function() {
+                document.getElementById('btnHarian').classList.add('tab-active');
+                document.getElementById('btnMingguan').classList.remove('tab-active');
+                document.getElementById('btnBulanan').classList.remove('tab-active');
+                currentView = 'daily';
+                updateDashboardSummary(currentView);
+                initSalesChart(currentChartType);
+                updateReportTable(currentView);
+            });
+            
+            document.getElementById('btnMingguan').addEventListener('click', function() {
+                document.getElementById('btnHarian').classList.remove('tab-active');
+                document.getElementById('btnMingguan').classList.add('tab-active');
+                document.getElementById('btnBulanan').classList.remove('tab-active');
+                currentView = 'weekly';
+                updateDashboardSummary(currentView);
+                initSalesChart(currentChartType);
+                updateReportTable(currentView);
+            });
+            
+            document.getElementById('btnBulanan').addEventListener('click', function() {
+                document.getElementById('btnHarian').classList.remove('tab-active');
+                document.getElementById('btnMingguan').classList.remove('tab-active');
+                document.getElementById('btnBulanan').classList.add('tab-active');
+                currentView = 'monthly';
+                updateDashboardSummary(currentView);
+                initSalesChart(currentChartType);
+                updateReportTable(currentView);
+            });
+            
+            // Form tab toggle
+            document.getElementById('tabSales').addEventListener('click', function() {
+                document.getElementById('tabSales').classList.add('subtab-active');
+                document.getElementById('tabVisit').classList.remove('subtab-active');
+                document.getElementById('dailyReportForm').classList.remove('hidden');
+                document.getElementById('visitReportForm').classList.add('hidden');
+            });
+            
+            document.getElementById('tabVisit').addEventListener('click', function() {
+                document.getElementById('tabSales').classList.remove('subtab-active');
+                document.getElementById('tabVisit').classList.add('subtab-active');
+                document.getElementById('dailyReportForm').classList.add('hidden');
+                document.getElementById('visitReportForm').classList.remove('hidden');
+            });
+            
+            // Chart type toggle
+            document.getElementById('lineChartBtn').addEventListener('click', function() {
+                initSalesChart('line');
+            });
+            
+            document.getElementById('barChartBtn').addEventListener('click', function() {
+                initSalesChart('bar');
+            });
+            
+            // Form submissions
+            document.getElementById('salesForm').addEventListener('submit', handleSalesFormSubmit);
+            document.getElementById('visitForm').addEventListener('submit', handleVisitFormSubmit);
+            
+            // Pagination
+            document.getElementById('prevPage').addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateReportTable(currentView);
+                }
+            });
+            
+            document.getElementById('nextPage').addEventListener('click', function() {
+                const data = currentView === 'daily' ? salesData.daily : 
+                            currentView === 'weekly' ? salesData.weekly : 
+                            currentView === 'monthly' ? salesData.monthly : 
+                            visitData;
+                
+                if (currentPage * itemsPerPage < data.length) {
+                    currentPage++;
+                    updateReportTable(currentView);
+                }
+            });
+            
+            // Search functionality
+            document.getElementById('searchReport').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                // Implement search logic if needed
+            });
+            
+            // Export buttons
+            document.getElementById('exportXLSX').addEventListener('click', function(e) {
+                e.preventDefault();
+                exportToExcel();
+            });
+            
+            document.getElementById('exportPDF').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Fitur export ke PDF belum tersedia');
+            });
+            
+            document.getElementById('exportCSV').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Fitur export ke CSV belum tersedia');
+            });
+            
+            // Modal close buttons
+            document.getElementById('closeVisitDetail').addEventListener('click', function() {
+                document.getElementById('visitDetailModal').classList.add('hidden');
+            });
+            
+            document.getElementById('closeVisitDetailBtn').addEventListener('click', function() {
+                document.getElementById('visitDetailModal').classList.add('hidden');
+            });
+            
+            document.getElementById('cancelConfirmation').addEventListener('click', function() {
+                document.getElementById('confirmationModal').classList.add('hidden');
+            });
+            
+            document.getElementById('confirmAction').addEventListener('click', deleteItem);
+        };
+
+        // Initialize the application
+        const initApp = () => {
+            checkFirstVisit();
+            loadData();
+            updateCurrentDate();
+            updateDashboardSummary();
+            initSalesChart();
+            initPerformanceChart();
+            updateReportTable();
+            initEventListeners();
+        };
+
+        // Start the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+
+<!-- Role-based access control script injected by update -->
+<script>
+(function () {
+    const session = JSON.parse(localStorage.getItem('session'));
+    if (!session || !session.loggedIn || session.expires < Date.now()) {
+        window.location.href = 'login.html';
+        return;
+    }
+    const currentUserRole = session.role;
+    const currentUserName = session.name;
+    const isAdmin = currentUserRole === 'admin';
+
+    // Update header name
+    document.addEventListener('DOMContentLoaded', () => {
+        const userBtn = document.getElementById('userMenuBtn');
+        if (userBtn) {
+            const spans = userBtn.getElementsByTagName('span');
+            if (spans.length) {
+                spans[spans.length - 1].textContent = `${currentUserName} (${currentUserRole})`;
+            }
+        }
+    });
+
+    // Utility to filter arrays by current sales user
+    const filterByUser = arr => isAdmin ? arr : arr.filter(i => i.salesPerson === currentUserName);
+
+    /* ---------- Override data related functions ---------- */
+    const origUpdateDashboardSummary = window.updateDashboardSummary;
+    window.updateDashboardSummary = function(type = 'daily') {
+        if (isAdmin) { 
+            origUpdateDashboardSummary(type);
+            return;
+        }
+        let totalSales = 0;
+        let totalTransactions = 0;
+        let data = [];
+        if (type === 'daily') data = filterByUser(salesData.daily);
+        else if (type === 'visit') data = filterByUser(visitData);
+        else data = filterByUser(salesData.daily);
+        data.forEach(item => {
+            totalSales += item.sales || 0;
+            totalTransactions += (item.transactions || 0);
+        });
+        document.getElementById('totalSales').textContent = formatCurrency(totalSales);
+        document.getElementById('totalTransactions').textContent = totalTransactions;
+        document.getElementById('targetAchieved').textContent = '—';
+        document.getElementById('targetProgressBar').style.width = '0%';
+        document.getElementById('totalVisits').textContent = filterByUser(visitData).length;
+    };
+
+    const origUpdateReportTable = window.updateReportTable;
+    window.updateReportTable = function(type = 'daily') {
+        origUpdateReportTable(type);
+
+        if (!isAdmin) {
+            // Remove action column header if present
+            const headerRow = document.getElementById('tableHeader');
+            [...headerRow.children].forEach(th => {
+                if (th.textContent.trim() === 'Aksi') th.remove();
+            });
+            // Remove last cell (action buttons) from each body row
+            document.querySelectorAll('#reportTableBody tr').forEach(tr => {
+                if (tr.lastElementChild) tr.removeChild(tr.lastElementChild);
+            });
+        }
+    };
+
+    const origExportToExcel = window.exportToExcel;
+    window.exportToExcel = function() {
+        if (isAdmin) { 
+            origExportToExcel();
+            return;
+        }
+        const exportSpinner = document.getElementById('exportSpinner');
+        const exportBtnText = document.getElementById('exportBtnText');
+        exportSpinner.classList.remove('hidden');
+        exportBtnText.textContent = 'Mengekspor...';
+        setTimeout(() => {
+            const dataToExport = filterByUser(salesData.daily).map(item => ({
+                'Tanggal': formatDate(item.date),
+                'Jumlah Transaksi': item.transactions,
+                'Total Penjualan': item.sales,
+                'Catatan': item.notes || ''
+            }));
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+            XLSX.writeFile(workbook, `Laporan_${currentUserName.replace(/\s+/g,'_')}.xlsx`);
+            exportSpinner.classList.add('hidden');
+            exportBtnText.textContent = 'Export';
+        }, 500);
+    };
+
+    /* ---------- UI restrictions for sales role ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!isAdmin) {
+            // Hide weekly & monthly buttons
+            ['btnMingguan', 'btnBulanan'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            // Restrict sales person selectors
+            ['salesPerson', 'visitSalesPerson'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (sel) {
+                    sel.innerHTML = `<option value="${currentUserName}">${currentUserName}</option>`;
+                    sel.value = currentUserName;
+                    sel.disabled = true;
+                }
+            });
+        }
+    });
+})();
+</script>
+
+</body>
+</html>
